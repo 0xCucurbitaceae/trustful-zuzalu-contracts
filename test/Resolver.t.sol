@@ -7,6 +7,7 @@ import { IResolver } from "../src/interfaces/IResolver.sol";
 import { ISchemaRegistry } from "../src/interfaces/ISchemaRegistry.sol";
 import { IEAS } from "../src/interfaces/IEAS.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { ResolverFactory } from "../src/resolver/ResolverFactory.sol";
 
 contract ResolverTest is Test {
   IEAS eas = IEAS(0x4200000000000000000000000000000000000021);
@@ -24,7 +25,8 @@ contract ResolverTest is Test {
     vm.label(deployer, "deployer");
     vm.label(roleReceiver, "roleReceiver");
     vm.startPrank(deployer);
-    resolver = new Resolver(eas, schemaRegistry, new address[](0));
+    ResolverFactory resolverFactory = new ResolverFactory();
+    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, deployer, new address[](0)));
   }
 
   function test_schemas_uids() public view {

@@ -6,6 +6,7 @@ import { Resolver } from "../src/resolver/Resolver.sol";
 import { IResolver } from "../src/interfaces/IResolver.sol";
 import { ISchemaRegistry } from "../src/interfaces/ISchemaRegistry.sol";
 import { IEAS } from "../src/interfaces/IEAS.sol";
+import { ResolverFactory } from "../src/resolver/ResolverFactory.sol";
 
 contract RegistryTest is Test {
   IEAS eas = IEAS(0x4200000000000000000000000000000000000021);
@@ -13,8 +14,10 @@ contract RegistryTest is Test {
   IResolver resolver;
 
   function setUp() public {
-    vm.startPrank(0xF977814e90dA44bFA03b6295A0616a897441aceC);
-    resolver = new Resolver(eas, schemaRegistry, new address[](0));
+    address deployer = 0xF977814e90dA44bFA03b6295A0616a897441aceC;
+    vm.startPrank(deployer);
+    ResolverFactory resolverFactory = new ResolverFactory();
+    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, deployer, new address[](0)));
   }
 
   function test_registry_manager() public {

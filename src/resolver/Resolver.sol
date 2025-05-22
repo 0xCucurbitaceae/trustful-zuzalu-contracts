@@ -52,7 +52,10 @@ contract Resolver is IResolver, AccessControl {
 
   /// @dev Creates a new resolver.
   /// @param eas The address of the global EAS contract.
-  constructor(IEAS eas, ISchemaRegistry schemaRegistry, address[] memory managers) {
+  /// @param schemaRegistry The address of the schema registry.
+  /// @param deployer The address that will gain all roles.
+  /// @param managers Array of addresses that will receive the MANAGER_ROLE.
+  constructor(IEAS eas, ISchemaRegistry schemaRegistry, address deployer, address[] memory managers) {
     if (address(eas) == address(0)) revert InvalidEAS();
     _eas = eas;
 
@@ -62,19 +65,19 @@ contract Resolver is IResolver, AccessControl {
     _setRoleAdmin(VILLAGER_ROLE, ROOT_ROLE);
 
     // Assigns all roles to the deployer
-    _grantRole(ROOT_ROLE, msg.sender);
-    _grantRole(MANAGER_ROLE, msg.sender);
-    _grantRole(VILLAGER_ROLE, msg.sender);
+    _grantRole(ROOT_ROLE, deployer);
+    _grantRole(MANAGER_ROLE, deployer);
+    _grantRole(VILLAGER_ROLE, deployer);
 
     for (uint256 i = 0; i < managers.length; i++) {
       _grantRole(MANAGER_ROLE, managers[i]);
     }
 
     IResolver myself = IResolver(address(this));
-    setSchema(schemaRegistry.register("string role", myself, true), Action.ASSIGN_MANAGER);
-    setSchema(schemaRegistry.register("string status", myself, false), Action.ASSIGN_VILLAGER);
-    setSchema(schemaRegistry.register("string title,string comment", myself, false), Action.ATTEST);
-    setSchema(schemaRegistry.register("bool status", myself, true), Action.REPLY);
+    _setSchema(schemaRegistry.register("string role", myself, true), Action.ASSIGN_MANAGER);
+    _setSchema(schemaRegistry.register("string status", myself, false), Action.ASSIGN_VILLAGER);
+    _setSchema(schemaRegistry.register("string title,string comment", myself, false), Action.ATTEST);
+    _setSchema(schemaRegistry.register("bool status", myself, true), Action.REPLY);
   }
 
   /// @dev Ensures that only the EAS contract can make this call.
@@ -272,6 +275,11 @@ contract Resolver is IResolver, AccessControl {
 
   /// @inheritdoc IResolver
   function setSchema(bytes32 uid, Action action) public onlyRole(ROOT_ROLE) {
+    _setSchema(uid, action);
+  }
+
+  /// @dev Internal function to set a schema.
+  function _setSchema(bytes32 uid, Action action) internal {
     _allowedSchemas[uid] = Action(action);
     _actionUids[action].push(uid);
   }
