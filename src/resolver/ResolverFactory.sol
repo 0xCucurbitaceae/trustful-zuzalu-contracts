@@ -17,29 +17,27 @@ contract ResolverFactory {
     /// @dev Deploys a new Resolver contract
     /// @param eas_ The address of the global EAS contract
     /// @param schemaRegistry_ The address of the schema registry
-    /// @param deployer_ The address that will receive all roles
     /// @param managers_ Array of addresses that will receive the MANAGER_ROLE
     /// @return The address of the newly deployed Resolver
     function deployResolver(
         IEAS eas_,
         ISchemaRegistry schemaRegistry_,
-        address deployer_,
         address[] memory managers_
     ) external returns (address) {
         if (address(eas_) == address(0)) revert InvalidEAS();
         if (address(schemaRegistry_) == address(0)) revert InvalidSchemaRegistry();
-        
-        Resolver resolver = new Resolver(eas_, schemaRegistry_, deployer_, managers_);
-        
+
+        Resolver resolver = new Resolver(eas_, schemaRegistry_, msg.sender, managers_);
+
         // Get all schema UIDs from the resolver
         bytes32[] memory schemaUIDs = new bytes32[](4);
         schemaUIDs[0] = IResolver(address(resolver)).getAllSchemas(IResolver.Action.ASSIGN_MANAGER)[0];
         schemaUIDs[1] = IResolver(address(resolver)).getAllSchemas(IResolver.Action.ASSIGN_VILLAGER)[0];
         schemaUIDs[2] = IResolver(address(resolver)).getAllSchemas(IResolver.Action.ATTEST)[0];
         schemaUIDs[3] = IResolver(address(resolver)).getAllSchemas(IResolver.Action.REPLY)[0];
-        
-        emit ResolverDeployed(address(resolver), deployer_, schemaUIDs);
-        
+
+        emit ResolverDeployed(address(resolver), msg.sender, schemaUIDs);
+
         return address(resolver);
     }
 }
