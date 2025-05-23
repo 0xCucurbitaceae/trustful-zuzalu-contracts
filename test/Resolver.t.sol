@@ -26,7 +26,7 @@ contract ResolverTest is Test {
     vm.label(roleReceiver, "roleReceiver");
     vm.startPrank(deployer);
     ResolverFactory resolverFactory = new ResolverFactory();
-    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, deployer, new address[](0)));
+    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, new address[](0)));
   }
 
   function test_schemas_uids() public view {

@@ -17,7 +17,7 @@ contract RegistryTest is Test {
     address deployer = 0xF977814e90dA44bFA03b6295A0616a897441aceC;
     vm.startPrank(deployer);
     ResolverFactory resolverFactory = new ResolverFactory();
-    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, deployer, new address[](0)));
+    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, new address[](0)));
   }
 
   function test_registry_manager() public {

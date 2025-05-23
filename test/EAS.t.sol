@@ -29,7 +29,7 @@ contract ResolverTest is Test {
     vm.label(villager, "VILLAGER");
     vm.startPrank(deployer);
     ResolverFactory resolverFactory = new ResolverFactory();
-    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, deployer, new address[](0)));
+    resolver = IResolver(resolverFactory.deployResolver(eas, schemaRegistry, new address[](0)));
   }
 
 

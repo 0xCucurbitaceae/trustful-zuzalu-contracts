@@ -8,7 +8,7 @@ import { ISchemaRegistry } from "../interfaces/ISchemaRegistry.sol";
 import { IResolver } from "../interfaces/IResolver.sol";
 import { InvalidEAS, InvalidSchemaRegistry } from "../Common.sol";
 
-/// @author Blockful
+/// @author 0xCucurbitacea
 /// @notice Factory contract for deploying Resolver contracts
 contract ResolverFactory {
     /// @notice Event emitted when a new Resolver is deployed
